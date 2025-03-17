@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:brand_forge/src/icon_changer.dart';
-import 'package:brand_forge/src/name_changer.dart';
-import 'package:flutter/foundation.dart';
+import 'package:brand_forge/src/utils.dart';
 
 void main(List<String> arguments) async {
+  Utils.showIntroduction();
   final parser = ArgParser();
 
   // Name related
@@ -19,115 +18,109 @@ void main(List<String> arguments) async {
   parser.addOption('ios-icon', help: 'Change the app icon for iOS.');
   parser.addOption('android-icon', help: 'Change the app icon for Android.');
   parser.addOption('windows-icon', help: 'Change the app icon for Windows.');
-  parser.addOption(
-    'icon-asset',
-    help: 'Change the app icon from an asset.',
-  );
-  parser.addOption(
-    'icon-file',
-    help: 'Change the app icon from a file.',
-  );
-  parser.addOption(
-    'icon-url',
-    help: 'Change the app icon from a URL.',
-  );
+  parser.addOption('icon-asset', help: 'Change the app icon from an asset.');
+  parser.addOption('icon-file', help: 'Change the app icon from a file.');
+  parser.addOption('icon-url', help: 'Change the app icon from a URL.');
 
   final argResults = parser.parse(arguments);
 
-  final nameChanger = NameChanger();
-  final iconChanger = IconChanger();
-
-  if (argResults.wasParsed('all')) {
-    final newName = argResults['all'] as String;
-    if (kDebugMode) {
-      print('Changing app name to "$newName" for all platforms...');
-    }
-    await _changeNameForAllPlatforms(newName, nameChanger);
+  if (argResults.wasParsed('all-name')) {
+    final newName = argResults['all-name'] as String;
+    Utils.log(
+      'Changing app name to "$newName" for all platforms...',
+      type: LogType.progress,
+    );
+    Utils.updateAndroidManifest(newName);
+    Utils.updateInfoPlist(newName);
+    Utils.updateWindowsRC(newName);
+    Utils.log(
+      'Changed app name to "$newName" for all platforms',
+      type: LogType.success,
+    );
   } else {
-    final iosName = argResults['ios'] as String?;
-    final androidName = argResults['android'] as String?;
-    final windowsName = argResults['windows'] as String?;
+    final iosName = argResults['ios-name'] as String?;
+    final androidName = argResults['android-name'] as String?;
+    final windowsName = argResults['windows-name'] as String?;
 
     if (iosName != null) {
-      if (kDebugMode) {
-        print('Changing iOS app name to "$iosName"...');
-      }
-      await nameChanger.setAppName(iosName);
+      Utils.log(
+        'Changing iOS app name to "$iosName"...',
+        type: LogType.progress,
+      );
+      Utils.updateInfoPlist(iosName);
+      Utils.log('Changed iOS app name to "$iosName"', type: LogType.success);
     }
     if (androidName != null) {
-      if (kDebugMode) {
-        print('Changing Android app name to "$androidName"...');
-      }
-      await nameChanger.setAppName(androidName);
+      Utils.log(
+        'Changing Android app name to "$androidName"...',
+        type: LogType.progress,
+      );
+      Utils.updateAndroidManifest(androidName);
+      Utils.log(
+        'Changed Android app name to "$androidName"',
+        type: LogType.success,
+      );
     }
     if (windowsName != null) {
-      if (kDebugMode) {
-        print('Changing Windows app name to "$windowsName"...');
-      }
-      await nameChanger.setAppName(windowsName);
+      Utils.log(
+        'Changing Windows app name to "$windowsName"...',
+        type: LogType.progress,
+      );
+      Utils.updateWindowsRC(windowsName);
+      Utils.log(
+        'Changed Windows app name to "$windowsName"',
+        type: LogType.success,
+      );
     }
   }
 
   if (argResults.wasParsed('all-icon')) {
-    final assetPath = argResults['icon-asset'] as String?;
-    final filePath = argResults['icon-file'] as String?;
-    final url = argResults['icon-url'] as String?;
-    if (kDebugMode) {
-      print('Changing app icon for all platforms...');
-    }
-    await _changeIconForAllPlatforms(assetPath, filePath, url, iconChanger);
+    final filePath = _getIconPath(argResults);
+    Utils.log('Changing app icon for all platforms...', type: LogType.progress);
+    Utils.copyIconToAndroidResource(filePath);
+    Utils.copyIconToIOSResource(filePath);
+    Utils.copyIconToWindowsResource(filePath);
+    Utils.updateAndroidManifestIcon();
+    Utils.updateInfoPlistIcon();
+    Utils.log('Changed app icon for all platforms', type: LogType.success);
   } else {
     final iosIcon = argResults['ios-icon'] as String?;
     final androidIcon = argResults['android-icon'] as String?;
     final windowsIcon = argResults['windows-icon'] as String?;
-    final iconAssetPath = argResults['icon-asset'] as String?;
-    final iconFilePath = argResults['icon-file'] as String?;
-    final iconUrl = argResults['icon-url'] as String?;
     if (iosIcon != null) {
-      if (kDebugMode) {
-        print('Changing iOS app icon...');
-      }
-      await _changeIconForPlatform(
-          iosIcon, iconAssetPath, iconFilePath, iconUrl, iconChanger);
+      Utils.log('Changing iOS app icon...', type: LogType.progress);
+      Utils.copyIconToIOSResource(_getIconPath(argResults));
+      Utils.updateInfoPlistIcon();
+      Utils.log('Changed iOS app icon', type: LogType.success);
     }
     if (androidIcon != null) {
-      if (kDebugMode) {
-        print('Changing Android app icon...');
-      }
-      await _changeIconForPlatform(
-          androidIcon, iconAssetPath, iconFilePath, iconUrl, iconChanger);
+      Utils.log('Changing Android app icon...', type: LogType.progress);
+      Utils.copyIconToAndroidResource(_getIconPath(argResults));
+      Utils.updateAndroidManifestIcon();
+      Utils.log('Changed Android app icon', type: LogType.success);
     }
     if (windowsIcon != null) {
-      if (kDebugMode) {
-        print('Changing Windows app icon...');
-      }
-      await _changeIconForPlatform(
-          windowsIcon, iconAssetPath, iconFilePath, iconUrl, iconChanger);
+      Utils.log('Changing Windows app icon...', type: LogType.progress);
+      Utils.copyIconToWindowsResource(_getIconPath(argResults));
+      Utils.log('Changed Windows app icon', type: LogType.success);
     }
   }
   exit(0);
 }
 
-Future<void> _changeNameForAllPlatforms(
-    String newName, NameChanger nameChanger) async {
-  await nameChanger.setAppName(newName);
-}
-
-Future<void> _changeIconForAllPlatforms(String? assetPath, String? filePath,
-    String? url, IconChanger iconChanger) async {
-  await _changeIconForPlatform('all', assetPath, filePath, url, iconChanger);
-}
-
-Future<void> _changeIconForPlatform(String? platform, String? assetPath,
-    String? filePath, String? url, IconChanger iconChanger) async {
-  if (assetPath != null) {
-    await iconChanger.setIconFromAsset(assetPath);
-  }
-  if (filePath != null) {
-    final file = File(filePath);
-    await iconChanger.setIconFromFile(file);
-  }
-  if (url != null) {
-    await iconChanger.setIconFromUrl(url);
+String _getIconPath(ArgResults argResults) {
+  final iconAssetPath = argResults['icon-asset'] as String?;
+  final iconFilePath = argResults['icon-file'] as String?;
+  final iconUrl = argResults['icon-url'] as String?;
+  if (iconAssetPath != null) {
+    // TODO: handle icon from asset.
+    throw UnimplementedError('Icon from asset is not implemented yet.');
+  } else if (iconFilePath != null) {
+    return iconFilePath;
+  } else if (iconUrl != null) {
+    // TODO: handle icon from url.
+    throw UnimplementedError('Icon from url is not implemented yet.');
+  } else {
+    throw Exception('Please provide icon path.');
   }
 }
