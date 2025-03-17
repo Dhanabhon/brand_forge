@@ -100,29 +100,29 @@ Navigate to the root directory of your Flutter project (where `pubspec.yaml` is 
 
     *Currently not supported.*
 
-* **Show Help**
+### Show Help
 
-    ```bash
-    brand_forge --help
-    ```
+```bash
+brand_forge --help
+```
 
-    You will see the following.
+You will see the following.
 
-    ```bash
-    -h, --help                 Print this usage information.
-      --all-name=<value>       Change the app name for all platforms.
-      --ios-name=<value>       Change the app name for iOS.
-      --android-name=<value>   Change the app name for Android.
-      --windows-name=<value>   Change the app name for Windows.
-      --all-icon=<value>       Change the app icon for all platforms.
-      --ios-icon=<value>       Change the app icon for iOS.
-      --android-icon=<value>   Change the app icon for Android.
-      --windows-icon=<value>   Change the app icon for Windows.
-      --icon-asset=<value>     Change the app icon from an asset.
-      --icon-file=<value>      Change the app icon from a file.
-      --icon-url=<value>       Change the app icon from a URL.
-    ```
-    
+```bash
+-h, --help                 Print this usage information.
+    --all-name=<value>       Change the app name for all platforms.
+    --ios-name=<value>       Change the app name for iOS.
+    --android-name=<value>   Change the app name for Android.
+    --windows-name=<value>   Change the app name for Windows.
+    --all-icon=<value>       Change the app icon for all platforms.
+    --ios-icon=<value>       Change the app icon for iOS.
+    --android-icon=<value>   Change the app icon for Android.
+    --windows-icon=<value>   Change the app icon for Windows.
+    --icon-asset=<value>     Change the app icon from an asset.
+    --icon-file=<value>      Change the app icon from a file.
+    --icon-url=<value>       Change the app icon from a URL.
+```
+  
 ## Supported File Formats for Icons
 
 * **Android**: `PNG`
