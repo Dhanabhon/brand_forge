@@ -100,7 +100,7 @@ Navigate to the root directory of your Flutter project (where `pubspec.yaml` is 
 
     *Currently not supported.*
 
-  ### Show Help
+* **Show Help**
 
     ```bash
     brand_forge --help
