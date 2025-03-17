@@ -1,2 +1,2 @@
-export 'src/name_changer.dart';
-export 'src/icon_changer.dart';
+export 'src/utils.dart';
+export 'tools/brand_forge.dart';
