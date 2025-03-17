@@ -107,7 +107,8 @@ Navigate to the root directory of your Flutter project (where `pubspec.yaml` is 
     ```
 
     You will see the following.
-    ```
+
+    ```bash
     -h, --help                 Print this usage information.
       --all-name=<value>       Change the app name for all platforms.
       --ios-name=<value>       Change the app name for iOS.
