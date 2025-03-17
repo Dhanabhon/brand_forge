@@ -1,7 +1,7 @@
 name: brand_forge
 description: "A Flutter package to change app name and icon via CLI"
 version: 0.0.1
-homepage: https://flutter.dev
+homepage: https://github.com/Dhanabhon/brand_forge
 
 environment:
   sdk: ^3.7.0
