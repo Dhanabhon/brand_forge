@@ -7,14 +7,15 @@ void main(List<String> arguments) async {
   Utils.showIntroduction();
   final parser = ArgParser();
 
+  // General options
+  parser.addOption('all', help: 'Change the app name/icon for all platforms.');
+  parser.addOption('all-icon', help: 'Change the app icon for all platforms.');
   // Name related
-  parser.addOption('all-name', help: 'Change the app name for all platforms.');
-  parser.addOption('ios-name', help: 'Change the app name for iOS.');
-  parser.addOption('android-name', help: 'Change the app name for Android.');
-  parser.addOption('windows-name', help: 'Change the app name for Windows.');
+  parser.addOption('ios', help: 'Change the app name for iOS.');
+  parser.addOption('android', help: 'Change the app name for Android.');
+  parser.addOption('windows', help: 'Change the app name for Windows.');
 
   // Icon related
-  parser.addOption('all-icon', help: 'Change the app icon for all platforms.');
   parser.addOption('ios-icon', help: 'Change the app icon for iOS.');
   parser.addOption('android-icon', help: 'Change the app icon for Android.');
   parser.addOption('windows-icon', help: 'Change the app icon for Windows.');
@@ -24,8 +25,9 @@ void main(List<String> arguments) async {
 
   final argResults = parser.parse(arguments);
 
-  if (argResults.wasParsed('all-name')) {
-    final newName = argResults['all-name'] as String;
+  // Handle 'all' option for names
+  if (argResults.wasParsed('all')) {
+    final newName = argResults['all'] as String;
     Utils.log(
       'Changing app name to "$newName" for all platforms...',
       type: LogType.progress,
@@ -38,9 +40,9 @@ void main(List<String> arguments) async {
       type: LogType.success,
     );
   } else {
-    final iosName = argResults['ios-name'] as String?;
-    final androidName = argResults['android-name'] as String?;
-    final windowsName = argResults['windows-name'] as String?;
+    final iosName = argResults['ios'] as String?;
+    final androidName = argResults['android'] as String?;
+    final windowsName = argResults['windows'] as String?;
 
     if (iosName != null) {
       Utils.log(
@@ -74,6 +76,7 @@ void main(List<String> arguments) async {
     }
   }
 
+  // Handle 'all-icon' option
   if (argResults.wasParsed('all-icon')) {
     final filePath = _getIconPath(argResults);
     Utils.log('Changing app icon for all platforms...', type: LogType.progress);
