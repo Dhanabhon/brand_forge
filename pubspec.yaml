@@ -1,5 +1,5 @@
 name: brand_forge
-description: "A Flutter package to change app name and icon via CLI"
+description: "A flutter package to change app name and icon via command line."
 version: 0.0.1
 homepage: https://github.com/Dhanabhon/brand_forge
 
@@ -12,12 +12,12 @@ dependencies:
     sdk: flutter
   args: ^2.7.0
   path: ^1.9.1
+  xml: ^6.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  test: ^1.25.15
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
