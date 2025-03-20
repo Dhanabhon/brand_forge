@@ -74,4 +74,4 @@ Here are examples of how to use BrandForge via the command line:
 
 ## Note
 
-Currently, BrandForge **only supports iOS and Android platforms**. Support for macOS, Windows, and Linux is planned for future releases.`
+Currently, BrandForge **only supports iOS and Android platforms**. Support for macOS, Windows, and Linux is planned for future releases.
