@@ -162,7 +162,7 @@ class BrandForge {
     );
 
     mainCppFile.writeAsStringSync(content);
-    _log('Windows app name change not yet implemented.', type: LogType.info);
+    _log('Windows app name updated to "$newName"', type: LogType.success);
   }
 
   static void _changeAppIconIOS(String iconPath) {
