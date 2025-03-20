@@ -19,7 +19,7 @@ BrandForge is a powerful Flutter package that empowers you to dynamically change
 
 Before you begin, ensure you have the following:
 
-* **Flutter SDK:** Version 1.17.0 or higher.
+* **Flutter SDK:** Version 3.29.1 or higher.
 * **Dart SDK:** Version 3.7.0 or higher.
 * **Development Environment:** A working development environment configured for Flutter (e.g., Android Studio, VS Code).
 * **Command-Line Access:** You are comfortable using the command line or terminal.
