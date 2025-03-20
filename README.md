@@ -58,7 +58,20 @@ Before you begin, ensure you have the following:
 
 ### Command-Line Interface (CLI)
 
+Here are examples of how to use BrandForge via the command line:
+
+**Change the iOS App Name:**
+
 ```bash
    dart run brand_forge:main ios-name "My New App Name"
+```
+
+**Change the Android App Name:**
+
+```bash
    dart run brand_forge:main android-name "My New App Name"
 ```
+
+## Note
+
+Currently, BrandForge **only supports iOS and Android platforms**. Support for macOS, Windows, and Linux is planned for future releases.`
