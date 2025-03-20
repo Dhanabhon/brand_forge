@@ -215,29 +215,38 @@ class BrandForge {
   }
 
   // Private helper method to log messages with prefixes.
-  static void _log(String message, {LogType type = LogType.info}) {
+  static void _log(
+    String message, {
+    LogType type = LogType.info,
+    bool showPrefixEmoji = true,
+  }) {
     String prefix = '';
     String emoji = '';
-    switch (type) {
-      case LogType.info:
-        prefix = '[INFO]';
-        emoji = 'ℹ️'; // Information symbol
-        break;
-      case LogType.progress:
-        prefix = '[PROGRESS]';
-        emoji = '⏳'; //  arrow
-        break;
-      case LogType.success:
-        prefix = '[SUCCESS]';
-        emoji = '✅'; // Check mark
-        break;
-      case LogType.error:
-        prefix = '[ERROR]';
-        emoji = '❌'; // Cross mark
-        break;
+    if (showPrefixEmoji) {
+      // Only add prefix and emoji if showPrefixEmoji is true
+      switch (type) {
+        case LogType.info:
+          prefix = '[INFO]';
+          emoji = 'ℹ️'; // Information symbol
+          break;
+        case LogType.progress:
+          prefix = '[PROGRESS]';
+          emoji = '⏳'; //  arrow
+          break;
+        case LogType.success:
+          prefix = '[SUCCESS]';
+          emoji = '✅'; // Check mark
+          break;
+        case LogType.error:
+          prefix = '[ERROR]';
+          emoji = '❌'; // Cross mark
+          break;
+      }
     }
     // ignore: avoid_print
-    print('$prefix $emoji $message');
+    print(
+      '$prefix$emoji $message',
+    ); // Concatenate prefix and emoji only if needed
   }
 
   static void showIntroduction() {
@@ -252,12 +261,13 @@ class BrandForge {
                                                 __/ |     
                                                 |___/     
     ''';
-    _log('\n$brandForgeArt', type: LogType.info);
-    _log('Welcome to BrandForge! 🎉', type: LogType.info);
+    _log('\n$brandForgeArt', type: LogType.info, showPrefixEmoji: false);
+    _log('Welcome to BrandForge! 🎉', type: LogType.info, showPrefixEmoji: false);
     _log(
       'This tool helps you dynamically change your app\'s name and icon.',
       type: LogType.info,
+      showPrefixEmoji: false,
     );
-    _log('Use --help to see available commands.', type: LogType.info);
+    _log('Use --help to see available commands.', type: LogType.info, showPrefixEmoji: false);
   }
 }
