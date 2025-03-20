@@ -21,10 +21,7 @@ class BrandForge {
         _changeAppNameAndroid(newName);
         break;
       case Platform.windows:
-        _log(
-          'Windows app name change not yet implemented.',
-          type: LogType.info,
-        );
+        _changeAppNameWindows(newName);
         break;
       case Platform.macOS:
         _log('macOS app name change not yet implemented.', type: LogType.info);
@@ -138,6 +135,34 @@ class BrandForge {
       document.toXmlString(pretty: true, indent: '  '),
     );
     _log('Android app name updated to "$newName"', type: LogType.success);
+  }
+
+  static void _changeAppNameWindows(String newName) {
+    final String projectRoot = _findProjectRoot();
+    final String mainCppPath = p.join(
+      projectRoot,
+      'windows',
+      'runner',
+      'main.cpp',
+    );
+    final File mainCppFile = File(mainCppPath);
+
+    if (!mainCppFile.existsSync()) {
+      _log(
+        'Error: Windows main.cpp file not found at $mainCppPath',
+        type: LogType.error,
+      );
+      return;
+    }
+
+    String content = mainCppFile.readAsStringSync();
+    content = content.replaceAll(
+      RegExp(r'!window\.Create\(L".*?"\)'),
+      '!window.Create(L"$newName")',
+    );
+
+    mainCppFile.writeAsStringSync(content);
+    _log('Windows app name change not yet implemented.', type: LogType.info);
   }
 
   static void _changeAppIconIOS(String iconPath) {
@@ -262,12 +287,20 @@ class BrandForge {
                                                 |___/     
     ''';
     _log('\n$brandForgeArt', type: LogType.info, showPrefixEmoji: false);
-    _log('Welcome to BrandForge! 🎉', type: LogType.info, showPrefixEmoji: false);
+    _log(
+      'Welcome to BrandForge! 🎉',
+      type: LogType.info,
+      showPrefixEmoji: false,
+    );
     _log(
       'This tool helps you dynamically change your app\'s name and icon.',
       type: LogType.info,
       showPrefixEmoji: false,
     );
-    _log('Use --help to see available commands.', type: LogType.info, showPrefixEmoji: false);
+    _log(
+      'Use --help to see available commands.',
+      type: LogType.info,
+      showPrefixEmoji: false,
+    );
   }
 }
