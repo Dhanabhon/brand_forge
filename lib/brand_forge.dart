@@ -252,7 +252,7 @@ class BrandForge {
                                                 __/ |     
                                                 |___/     
     ''';
-    _log(brandForgeArt, type: LogType.info);
+    _log('\n$brandForgeArt', type: LogType.info);
     _log('Welcome to BrandForge! 🎉', type: LogType.info);
     _log(
       'This tool helps you dynamically change your app\'s name and icon.',
