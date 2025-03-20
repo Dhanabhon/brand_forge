@@ -2,7 +2,7 @@ import 'package:args/args.dart';
 import 'package:brand_forge/brand_forge.dart';
 
 void main(List<String> arguments) {
-  BrandForge.showIntroduction(); // Show the introduction!
+  BrandForge.showIntroduction();
 
   final parser =
       ArgParser()
@@ -52,9 +52,9 @@ void main(List<String> arguments) {
     final allName = argResults['all-name']!;
     BrandForge.changeAppName(Platform.iOS, allName);
     BrandForge.changeAppName(Platform.android, allName);
-    BrandForge.changeAppName(Platform.macOS, allName);
-    BrandForge.changeAppName(Platform.windows, allName);
-    BrandForge.changeAppName(Platform.linux, allName);
+    // BrandForge.changeAppName(Platform.macOS, allName);
+    // BrandForge.changeAppName(Platform.windows, allName);
+    // BrandForge.changeAppName(Platform.linux, allName);
   }
 
   // Handle App Icon Changes
@@ -66,8 +66,8 @@ void main(List<String> arguments) {
     final allIcon = argResults['all-icon']!;
     BrandForge.changeAppIcon(Platform.iOS, allIcon);
     BrandForge.changeAppIcon(Platform.android, allIcon);
-    BrandForge.changeAppIcon(Platform.macOS, allIcon);
-    BrandForge.changeAppIcon(Platform.windows, allIcon);
-    BrandForge.changeAppIcon(Platform.linux, allIcon);
+    // BrandForge.changeAppIcon(Platform.macOS, allIcon);
+    // BrandForge.changeAppIcon(Platform.windows, allIcon);
+    // BrandForge.changeAppIcon(Platform.linux, allIcon);
   }
 }
