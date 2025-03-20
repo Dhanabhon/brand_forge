@@ -157,7 +157,7 @@ class BrandForge {
 
     String content = mainCppFile.readAsStringSync();
     content = content.replaceAll(
-      RegExp(r'!window\.Create\(L".*?"\)'),
+      RegExp(r'!window\.Create\(L"(.*?)"\)'),
       '!window.Create(L"$newName")',
     );
 
