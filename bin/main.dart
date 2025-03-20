@@ -49,7 +49,7 @@ void main(List<String> arguments) {
     BrandForge.changeAppName(Platform.iOS, argResults['ios-name']!);
   } else if (argResults['android-name'] != null) {
     BrandForge.changeAppName(Platform.android, argResults['android-name']!);
-  } else if (argResults['widnows-name'] != null) {
+  } else if (argResults['windows-name'] != null) {
     BrandForge.changeAppName(Platform.windows, argResults['windows-name']!);
   } else if (argResults['all-name'] != null) {
     final allName = argResults['all-name']!;
