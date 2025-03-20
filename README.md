@@ -1,6 +1,7 @@
 # BrandForge: Dynamically Brand Your Flutter App
 
 [![pub package](https://img.shields.io/pub/v/brand_forge.svg)](https://pub.dev/packages/brand_forge)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 BrandForge is a powerful Flutter package that empowers you to dynamically change your Flutter application's name and icon directly from the command line or within your Dart code. This is incredibly useful for white-labeling, creating multiple app variants, or managing different branding strategies.
 
@@ -30,7 +31,7 @@ Before you begin, ensure you have the following:
     Open your project's `pubspec.yaml` file and add BrandForge as a dependency:
 
     ```yaml
-    dependencies:
+    dev_dependencies:
       brand_forge:
         git:
           url: https://github.com/Dhanabhon/brand_forge.git
@@ -58,6 +59,6 @@ Before you begin, ensure you have the following:
 ### Command-Line Interface (CLI)
 
 ```bash
-   brand_forge change-name --platform ios --name "My New App Name"
-   brand_forge change-name --platform android --name "My New App Name"
+   dart run brand_forge:main ios-name "My New App Name"
+   dart run brand_forge:main android-name "My New App Name"
 ```
