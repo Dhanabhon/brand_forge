@@ -9,6 +9,7 @@ void main(List<String> arguments) {
         ..addOption('ios-name', help: 'Change the app name for iOS.')
         ..addOption('android-name', help: 'Change the app name for Android.')
         ..addOption('windows-name', help: 'Change the app name for Windows.')
+        ..addOption('macos-name', help: 'Change the app name for macOS.')
         ..addOption(
           'all-name',
           help:
@@ -51,12 +52,14 @@ void main(List<String> arguments) {
     BrandForge.changeAppName(Platform.android, argResults['android-name']!);
   } else if (argResults['windows-name'] != null) {
     BrandForge.changeAppName(Platform.windows, argResults['windows-name']!);
+  } else if (argResults['macos-name'] != null) {
+    BrandForge.changeAppName(Platform.macOS, argResults['macos-name']!);
   } else if (argResults['all-name'] != null) {
     final allName = argResults['all-name']!;
     BrandForge.changeAppName(Platform.iOS, allName);
     BrandForge.changeAppName(Platform.android, allName);
     BrandForge.changeAppName(Platform.windows, allName);
-    // BrandForge.changeAppName(Platform.macOS, allName);
+    BrandForge.changeAppName(Platform.macOS, allName);
     // BrandForge.changeAppName(Platform.linux, allName);
   }
 

@@ -24,7 +24,7 @@ class BrandForge {
         _changeAppNameWindows(newName);
         break;
       case Platform.macOS:
-        _log('macOS app name change not yet implemented.', type: LogType.info);
+        _changeAppNameMacOS(newName);
         break;
       case Platform.linux:
         _log('Linux app name change not yet implemented.', type: LogType.info);
@@ -163,6 +163,34 @@ class BrandForge {
 
     mainCppFile.writeAsStringSync(content);
     _log('Windows app name updated to "$newName"', type: LogType.success);
+  }
+
+  static void _changeAppNameMacOS(String newName) {
+    final String projectRoot = _findProjectRoot();
+    final String infoPlistPath = p.join(
+      projectRoot,
+      'macos',
+      'Runner',
+      'Info.plist',
+    );
+    final File infoPlistFile = File(infoPlistPath);
+
+    if (!infoPlistFile.existsSync()) {
+      _log(
+        'Error: Info.plist not found at $infoPlistPath',
+        type: LogType.error,
+      );
+      return;
+    }
+
+    String content = infoPlistFile.readAsStringSync();
+    content = content.replaceAll(
+      RegExp(r'<key>CFBundleName</key>\s*<string>.*?</string>'),
+      '<key>CFBundleName</key>\n<string>$newName</string>',
+    );
+
+    infoPlistFile.writeAsStringSync(content);
+    _log('macOS app name updated to "$newName"', type: LogType.success);
   }
 
   static void _changeAppIconIOS(String iconPath) {

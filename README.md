@@ -78,14 +78,20 @@ Here are examples of how to use BrandForge via the command line:
    dart run brand_forge:main --windows-name "My New App Name"
 ```
 
+**Change the macOS App Name:**
+
+```bash
+   dart run brand_forge:main --macos-name "My New App Name"
+```
+
 **Change All App Names:**
 
 ```bash
    dart run brand_forge:main --all-name "My New App Name"
 ```
 
-**Testing:** The app name change functionality has been extensively tested on both iOS and Android devices and emulators. Successful changes were verified by rebuilding and running the application after using the CLI commands.
+**Testing:** The app name change functionality has been extensively tested on iOS, Android, and Windows devices. Successful changes were verified by rebuilding and running the application after using the CLI commands.
 
 ## Note
 
-Currently, BrandForge **supports renaming apps on iOS, Android, and Windows platforms**. Future updates will include support for macOS, Linux, and Web platforms.
+Currently, BrandForge **supports renaming apps on iOS, Android, Windows, and macOS platforms**. Future updates will include support for Linux, and Web platforms.
