@@ -9,3 +9,7 @@
 ## 0.0.3
 
 * Added support for renaming macOS applications.
+
+## 0.0.4
+
+* Added support for renaming Linux applications.

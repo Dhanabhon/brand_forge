@@ -84,6 +84,12 @@ Here are examples of how to use BrandForge via the command line:
    dart run brand_forge:main --macos-name "My New App Name"
 ```
 
+**Change the Linux App Name:**
+
+```bash
+   dart run brand_forge:main --linux-name "My New App Name"
+```
+
 **Change All App Names:**
 
 ```bash
