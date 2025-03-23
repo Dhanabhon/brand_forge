@@ -27,7 +27,7 @@ class BrandForge {
         _changeAppNameMacOS(newName);
         break;
       case Platform.linux:
-        _log('Linux app name change not yet implemented.', type: LogType.info);
+        _changeAppNameLinux(newName);
         break;
     }
   }
@@ -191,6 +191,38 @@ class BrandForge {
 
     infoPlistFile.writeAsStringSync(content);
     _log('macOS app name updated to "$newName"', type: LogType.success);
+  }
+
+  static void _changeAppNameLinux(String newName) {
+    final String projectRoot = _findProjectRoot();
+    final String applicationPath= p.join(
+      projectRoot,
+      'linux',
+      'runner',
+      'my_application.cc',
+    );
+    final File applicationFile = File(applicationPath);
+
+    if (!applicationFile.existsSync()) {
+      _log(
+        'Error: Linux my_application.cc file not found at $applicationPath',
+        type: LogType.error,
+      );
+      return;
+    }
+
+    String content = applicationFile.readAsStringSync();
+    content = content.replaceAll(
+      RegExp(r'gtk_header_bar_set_title\(header_bar, ".*?"\)'),
+      'gtk_header_bar_set_title(header_bar, "$newName")',
+    );
+    content = content.replaceAll(
+      RegExp(r'gtk_window_set_title\(window, ".*?"\)'),
+      'gtk_window_set_title(window, "$newName")',
+    );
+
+    applicationFile.writeAsStringSync(content);
+    _log('Linux app name updated to "$newName"', type: LogType.success);
   }
 
   static void _changeAppIconIOS(String iconPath) {
