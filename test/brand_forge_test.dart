@@ -1,3 +1,4 @@
+import 'package:brand_forge/helpers/platform_helper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:brand_forge/brand_forge.dart';
 
@@ -5,7 +6,7 @@ void main() {
   group('BrandForge', () {
     test('changeAppName for iOS', () {
       // Arrange
-      final platform = Platform.iOS;
+      final platform = ForgePlatform.iOS;
       final newName = 'NewAppName';
 
       // Act
@@ -17,7 +18,7 @@ void main() {
 
     test('changeAppName for Android', () {
       // Arrange
-      final platform = Platform.android;
+      final platform = ForgePlatform.android;
       final newName = 'NewAppName';
 
       // Act
@@ -29,7 +30,7 @@ void main() {
 
     test('changeAppIcon for iOS', () {
       // Arrange
-      final platform = Platform.iOS;
+      final platform = ForgePlatform.iOS;
       final newIconPath = 'path/to/new/icon.png';
 
       // Act
@@ -41,7 +42,7 @@ void main() {
 
     test('changeAppIcon for Android', () {
       // Arrange
-      final platform = Platform.android;
+      final platform = ForgePlatform.android;
       final newIconPath = 'path/to/new/icon.png';
 
       // Act

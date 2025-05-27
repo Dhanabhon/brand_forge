@@ -1,5 +1,6 @@
 import 'package:args/args.dart';
 import 'package:brand_forge/brand_forge.dart';
+import 'package:brand_forge/helpers/platform_helper.dart';
 
 void main(List<String> arguments) {
   BrandForge.showIntroduction();
@@ -48,35 +49,44 @@ void main(List<String> arguments) {
 
   // Handle App Name Changes
   if (argResults['ios-name'] != null) {
-    BrandForge.changeAppName(Platform.iOS, argResults['ios-name']!);
+    BrandForge.changeAppName(ForgePlatform.iOS, argResults['ios-name']!);
   } else if (argResults['android-name'] != null) {
-    BrandForge.changeAppName(Platform.android, argResults['android-name']!);
+    BrandForge.changeAppName(
+      ForgePlatform.android,
+      argResults['android-name']!,
+    );
   } else if (argResults['windows-name'] != null) {
-    BrandForge.changeAppName(Platform.windows, argResults['windows-name']!);
+    BrandForge.changeAppName(
+      ForgePlatform.windows,
+      argResults['windows-name']!,
+    );
   } else if (argResults['macos-name'] != null) {
-    BrandForge.changeAppName(Platform.macOS, argResults['macos-name']!);
+    BrandForge.changeAppName(ForgePlatform.macOS, argResults['macos-name']!);
   } else if (argResults['linux-name'] != null) {
-    BrandForge.changeAppName(Platform.linux, argResults['linux-name']!);
+    BrandForge.changeAppName(ForgePlatform.linux, argResults['linux-name']!);
   } else if (argResults['all-name'] != null) {
     final allName = argResults['all-name']!;
-    BrandForge.changeAppName(Platform.iOS, allName);
-    BrandForge.changeAppName(Platform.android, allName);
-    BrandForge.changeAppName(Platform.windows, allName);
-    BrandForge.changeAppName(Platform.macOS, allName);
-    BrandForge.changeAppName(Platform.linux, allName);
+    BrandForge.changeAppName(ForgePlatform.iOS, allName);
+    BrandForge.changeAppName(ForgePlatform.android, allName);
+    BrandForge.changeAppName(ForgePlatform.windows, allName);
+    BrandForge.changeAppName(ForgePlatform.macOS, allName);
+    BrandForge.changeAppName(ForgePlatform.linux, allName);
   }
 
   // Handle App Icon Changes
   if (argResults['ios-icon'] != null) {
-    BrandForge.changeAppIcon(Platform.iOS, argResults['ios-icon']!);
+    BrandForge.changeAppIcon(ForgePlatform.iOS, argResults['ios-icon']!);
   } else if (argResults['android-icon'] != null) {
-    BrandForge.changeAppIcon(Platform.android, argResults['android-icon']!);
+    BrandForge.changeAppIcon(
+      ForgePlatform.android,
+      argResults['android-icon']!,
+    );
   } else if (argResults['all-icon'] != null) {
     final allIcon = argResults['all-icon']!;
-    BrandForge.changeAppIcon(Platform.iOS, allIcon);
-    BrandForge.changeAppIcon(Platform.android, allIcon);
-    // BrandForge.changeAppIcon(Platform.macOS, allIcon);
-    // BrandForge.changeAppIcon(Platform.windows, allIcon);
-    // BrandForge.changeAppIcon(Platform.linux, allIcon);
+    BrandForge.changeAppIcon(ForgePlatform.iOS, allIcon);
+    BrandForge.changeAppIcon(ForgePlatform.android, allIcon);
+    // BrandForge.changeAppIcon(ForgePlatform.macOS, allIcon);
+    // BrandForge.changeAppIcon(ForgePlatform.windows, allIcon);
+    // BrandForge.changeAppIcon(ForgePlatform.linux, allIcon);
   }
 }

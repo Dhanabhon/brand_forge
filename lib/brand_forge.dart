@@ -1,38 +1,37 @@
 import 'dart:io';
 
+import 'package:brand_forge/helpers/platform_helper.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
-
-enum Platform { iOS, android, windows, macOS, linux }
 
 enum LogType { info, progress, success, error }
 
 class BrandForge {
-  static void changeAppName(Platform platform, String newName) {
+  static void changeAppName(ForgePlatform platform, String newName) {
     _log(
       'Changing app name for ${platform.name} to "$newName"...',
       type: LogType.progress,
     );
     switch (platform) {
-      case Platform.iOS:
+      case ForgePlatform.iOS:
         _changeAppNameIOS(newName);
         break;
-      case Platform.android:
+      case ForgePlatform.android:
         _changeAppNameAndroid(newName);
         break;
-      case Platform.windows:
+      case ForgePlatform.windows:
         _changeAppNameWindows(newName);
         break;
-      case Platform.macOS:
+      case ForgePlatform.macOS:
         _changeAppNameMacOS(newName);
         break;
-      case Platform.linux:
+      case ForgePlatform.linux:
         _changeAppNameLinux(newName);
         break;
     }
   }
 
-  static void changeAppIcon(Platform platform, String iconPath) {
+  static void changeAppIcon(ForgePlatform platform, String iconPath) {
     final File iconFile = File(iconPath);
     if (!iconFile.existsSync()) {
       _log('Error: Icon file not found at $iconPath', type: LogType.error);
@@ -43,22 +42,22 @@ class BrandForge {
       type: LogType.progress,
     );
     switch (platform) {
-      case Platform.iOS:
+      case ForgePlatform.iOS:
         _changeAppIconIOS(iconPath);
         break;
-      case Platform.android:
+      case ForgePlatform.android:
         _changeAppIconAndroid(iconPath);
         break;
-      case Platform.windows:
+      case ForgePlatform.windows:
         _log(
           'Windows app icon change not yet implemented.',
           type: LogType.info,
         );
         break;
-      case Platform.macOS:
+      case ForgePlatform.macOS:
         _log('macOS app icon change not yet implemented.', type: LogType.info);
         break;
-      case Platform.linux:
+      case ForgePlatform.linux:
         _log('Linux app icon change not yet implemented.', type: LogType.info);
         break;
     }
