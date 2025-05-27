@@ -173,17 +173,13 @@ You can also use BrandForge directly in your Dart code:
 
 ### iOS
 
-- **App Name:** `ios/Runner/Info.plist`
-
-(CFBundleDisplayName, CFBundleName)
+- **App Name:** `ios/Runner/Info.plist` (CFBundleDisplayName, CFBundleName)
 
 - **App Icon:** `ios/Runner/Assets.xcassets/AppIcon.appiconset/`
 
 ### Android
 
-- **App Name:** `android/app/src/main/AndroidManifest.xml`
-
-(android:label)
+- **App Name:** `android/app/src/main/AndroidManifest.xml` (android:label)
 
 - **App Icon:** `android/app/src/main/res/mipmap-*/ic_launcher.png`
 
@@ -300,5 +296,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 - 🐛 Report bugs on [GitHub Issues](https://github.com/Dhanabhon/brand_forge/issues)
 
 - 💬 Ask questions in [GitHub Discussions](https://github.com/Dhanabhon/brand_forge/discussions)
+
+---
 
 Made with ❤️ by the BrandForge
