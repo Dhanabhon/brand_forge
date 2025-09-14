@@ -7,10 +7,13 @@ BrandForge is a powerful Flutter package that empowers you to dynamically change
 
 ## ✨ Key Features
 
-* **Dynamic App Name Changes:** Effortlessly modify the display name of your app for both iOS and Android platforms.
-* **Custom App Icons:** Swap out your app's icon with ease, allowing for complete visual rebranding on both platforms.
-* **Comprehensive Logging:** Track the changes made by BrandForge with detailed logging, including informative messages, progress indicators, success confirmations, and error reports.
-* **Command-Line Interface (CLI):**  Operate BrandForge via the command line for efficient automation.
+* **Dynamic App Name Changes:** Effortlessly modify the display name of your app for all supported platforms (iOS, Android, Windows, macOS, Linux).
+* **Custom App Icons:** Swap out your app's icon with ease for iOS and Android platforms, with additional platform support coming soon.
+* **Enhanced Logging System:** Multi-level logging (debug, info, progress, success, warning, error) with optional verbose mode and emoji support.
+* **Intelligent Backup System:** Automatic timestamped backups of all modified files with cleanup of old backups to save space.
+* **Robust Error Handling:** Typed exceptions with detailed error messages, solutions, and recovery guidance.
+* **Comprehensive Validation:** Input validation for app names, icon files, and project structure with helpful error messages.
+* **Command-Line Interface (CLI):** Operate BrandForge via the command line for efficient automation with verbose logging support.
 * **Programmatic API:** Integrate BrandForge directly within your Dart code for complete flexibility.
 
 ## 🚀 Getting Started
@@ -141,20 +144,28 @@ You can also use BrandForge directly in your Dart code:
 ```dart
    import 'package:brand_forge/brand_forge.dart';
    import 'package:brand_forge/helpers/platform_helper.dart';
+   import 'package:brand_forge/errors/brand_forge_exception.dart';
 
    void main() {
       try {
+         // Enable verbose logging for detailed output
+         BrandForge.setVerboseMode(true);
+
          // Change app name
          BrandForge.changeAppName(ForgePlatform.iOS, 'My New App');
          BrandForge.changeAppName(ForgePlatform.android, 'My New App');
-         
-         // Change app icon
+
+         // Change app icon (iOS and Android supported)
          BrandForge.changeAppIcon(ForgePlatform.iOS, 'assets/icon.png');
          BrandForge.changeAppIcon(ForgePlatform.android, 'assets/icon.png');
-         
-         print('Branding updated successfully!');
+
+         print('✅ Branding updated successfully!');
       } catch (e) {
-         print('Error: $e');
+         if (e is BrandForgeException) {
+           print(e.toString()); // Includes detailed error info and solutions
+         } else {
+           print('❌ Unexpected error: $e');
+         }
       }
    }
 ```
@@ -201,62 +212,93 @@ You can also use BrandForge directly in your Dart code:
 
 - **App Icon:** Not yet implemented
 
-## 🛡️ Safety Features
+## 🛡️ Safety & Reliability Features
 
-### Automatic Backups
+### Intelligent Backup System
 
 BrandForge automatically creates backups of all modified files with timestamps:
 
-- Single files: `filename.ext.backup.1640995200000`
+- **Single files:** `filename.ext.backup.1640995200000`
+- **Directories:** `dirname.backup.1640995200000`
+- **Automatic cleanup:** Keeps only the 5 most recent backups to save disk space
+- **Backup restoration:** Built-in capability to restore from the most recent backup
 
-- Directories: `dirname.backup.1640995200000`
+### Comprehensive Input Validation
 
-### Input Validation
+- **App Names:**
+  - Must not be empty or contain only whitespace
+  - Maximum length of 100 characters
+  - No invalid characters: `< > : " / \ | ? *`
+  - No leading or trailing spaces
 
-- **App Names:** Must not be empty, under 100 characters, and contain no invalid characters
+- **Icon Files:**
+  - Must exist and be accessible
+  - Maximum size of 10MB
+  - Valid extensions: `.png`, `.jpg`, `.jpeg`, `.ico`
+  - Cannot be empty files
 
-- **Icon Files:** Must exist, be under 10MB, and have valid extensions (.png, .jpg, .jpeg, .ico)
+- **Project Structure:** Validates Flutter project structure and platform support before making changes
 
-- **Project Structure** Validates Flutter project structure before making changes
+### Enhanced Error Handling
 
-### Error Handling
-
-Comprehensive error messages with solutions:
+Typed error system with detailed, actionable error messages:
 
 ```sh
-   ❌ Error: Icon file not found at: /path/to/icon.png
-   Solution: Check the file path and ensure the file exists
+❌ Validation Error: App name contains invalid characters: <, >
+💡 Solution: Remove special characters like < > : " / \ | ? *
+
+📁 File Error: File not found: /path/to/icon.png
+File: /path/to/icon.png
+💡 Solution: Ensure the file exists and the path is correct
+
+🚧 Platform Error: App icon change is not yet supported on macOS
+💡 Solution: This feature will be added in a future version
 ```
+
+### Service-Oriented Architecture
+
+- **ValidationService:** Centralized input and project validation
+- **LoggingService:** Multi-level logging with formatting options
+- **BackupService:** Intelligent file backup and restoration
+- **Separation of Concerns:** Each service handles specific functionality
 
 ## 🧪 Testing
 
-Run the test suite:
+Run the comprehensive test suite:
 
 ```bash
    dart test
 ```
 
-The tests cover:
+The enhanced test suite covers:
 
-- Input validation
+- **Input validation:** App name and icon file validation
+- **Error handling:** All exception types and error scenarios
+- **Platform detection:** Cross-platform compatibility
+- **CLI argument parsing:** Command-line interface functionality
+- **Service functionality:** Validation, logging, and backup services
+- **Integration tests:** End-to-end functionality testing
+- **Edge cases:** Boundary conditions and error recovery
 
-- Error handling
+### Test Architecture
 
-- Platform detection
-
-- CLI argument parsing
+- **Unit tests:** Individual service and utility testing
+- **Integration tests:** Cross-service functionality
+- **Mocking:** Isolated testing of file operations
+- **Error simulation:** Testing error conditions and recovery
 
 ## 🚧 Upcoming Features
 
 - **Complete Icon Support:** Windows, macOS, and Linux icon changes
-
 - **Web Platform Support:** Progressive Web App configuration
-
 - **Advanced Configuration:** YAML configuration files and templates
-
 - **Batch Operations:** Process multiple projects at once
-
 - **Icon Processing:** Automatic resizing and format conversion
+- **Backup Management:** Advanced backup policies and retention settings
+- **Template System:** Pre-configured branding templates
+- **CI/CD Integration:** GitHub Actions and other CI/CD pipeline support
+- **Configuration Profiles:** Save and reuse branding configurations
+- **Rollback System:** Easy rollback to previous branding states
 
 ## 🤝 Contributing
 
@@ -279,15 +321,45 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 ### "Permission denied" errors
 
 - On Unix systems, ensure you have write permissions to the project files
-
 - Try running with appropriate permissions
-
+- Check that backup directories are writable
 
 ### "File not found" errors for platform-specific files
 
 - Ensure the target platform is added to your Flutter project
-
 - Run `flutter create --platforms=ios,android,windows,macos,linux .` to add missing platforms
+- Verify platform directories exist in your project structure
+
+### Verbose Mode for Troubleshooting
+
+Enable detailed logging to diagnose issues:
+
+```bash
+   dart run brand_forge --all-name "My App" --verbose
+```
+
+Verbose mode provides:
+- Detailed operation progress
+- File backup notifications
+- Validation step-by-step information
+- Enhanced error context
+
+### Service-Specific Issues
+
+**ValidationService Issues:**
+- Project root detection problems
+- Platform directory validation failures
+- Input format validation errors
+
+**BackupService Issues:**
+- Insufficient disk space for backups
+- Permission issues creating backup directories
+- Backup cleanup problems
+
+**LoggingService Issues:**
+- Output formatting problems
+- Verbose mode not working
+- Emoji display issues in certain terminals
 
 ## Getting Help
 

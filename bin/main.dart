@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:brand_forge/brand_forge.dart';
 import 'package:brand_forge/helpers/platform_helper.dart';
+import 'package:brand_forge/services/logging_service.dart';
 
 void main(List<String> arguments) {
   BrandForge.showIntroduction();
@@ -68,11 +69,12 @@ void main(List<String> arguments) {
 
     // Set verbose mode if requested
     final verbose = results['verbose'] as bool;
+    BrandForge.setVerboseMode(verbose);
 
     _processCommands(results, verbose);
   } catch (e) {
-    print('❌ Error: ${e.toString()}');
-    print('Use --help for usage information.');
+    LoggingService.error(e.toString());
+    LoggingService.info('Use --help for usage information.');
     exit(1);
   }
 }
@@ -110,7 +112,7 @@ void _processCommands(ArgResults results, bool verbose) {
         throw ArgumentError('App name cannot be empty');
       }
 
-      if (verbose) print('🔄 Processing $optionName...');
+      if (verbose) LoggingService.debug('Processing $optionName...');
       BrandForge.changeAppName(platform, appName);
       hasAnyCommand = true;
     }
@@ -146,15 +148,15 @@ void _processCommands(ArgResults results, bool verbose) {
         throw ArgumentError('Icon path cannot be empty');
       }
 
-      if (verbose) print('🔄 Processing $optionName...');
+      if (verbose) LoggingService.debug('Processing $optionName...');
       BrandForge.changeAppIcon(platform, iconPath);
       hasAnyCommand = true;
     }
   }
 
   if (!hasAnyCommand) {
-    print('❌ No valid commands provided.');
-    print('Use --help for usage information.');
+    LoggingService.error('No valid commands provided.');
+    LoggingService.info('Use --help for usage information.');
     exit(1);
   }
 }
@@ -168,13 +170,13 @@ void _changeAppNameForAllPlatforms(String appName, bool verbose) {
     ForgePlatform.linux,
   ];
 
-  if (verbose) print('🔄 Changing app name for all platforms...');
+  if (verbose) LoggingService.debug('Changing app name for all platforms...');
 
   for (final platform in platforms) {
     try {
       BrandForge.changeAppName(platform, appName);
     } catch (e) {
-      print('⚠️  Warning: Failed to change app name for ${platform.name}: $e');
+      LoggingService.warning('Failed to change app name for ${platform.name}: $e');
     }
   }
 }
@@ -188,19 +190,19 @@ void _changeAppIconForAllPlatforms(String iconPath, bool verbose) {
     ForgePlatform.linux,
   ];
 
-  if (verbose) print('🔄 Changing app icon for all platforms...');
+  if (verbose) LoggingService.debug('Changing app icon for all platforms...');
 
   for (final platform in platforms) {
     try {
       BrandForge.changeAppIcon(platform, iconPath);
     } catch (e) {
-      print('⚠️  Warning: Failed to change app icon for ${platform.name}: $e');
+      LoggingService.warning('Failed to change app icon for ${platform.name}: $e');
     }
   }
 }
 
 void _showHelp(ArgParser parser) {
-  print('''
+  LoggingService.info('''
 BrandForge - Dynamically Brand Your Flutter App
 
 Usage: dart run brand_forge [options]
@@ -220,6 +222,6 @@ For more information, visit: https://github.com/Dhanabhon/brand_forge
 }
 
 void _showVersion() {
-  print('BrandForge version 0.0.4');
-  print('A Flutter package to change app name and icon via command line.');
+  LoggingService.info('BrandForge version 0.0.4');
+  LoggingService.info('A Flutter package to change app name and icon via command line.');
 }

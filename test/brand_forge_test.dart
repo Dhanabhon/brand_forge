@@ -1,55 +1,87 @@
+import 'dart:io';
 import 'package:brand_forge/helpers/platform_helper.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:brand_forge/errors/brand_forge_exception.dart';
+import 'package:brand_forge/services/logging_service.dart';
+import 'package:test/test.dart';
 import 'package:brand_forge/brand_forge.dart';
 
 void main() {
   group('BrandForge', () {
-    test('changeAppName for iOS', () {
-      // Arrange
-      final platform = ForgePlatform.iOS;
-      final newName = 'NewAppName';
-
-      // Act
-      BrandForge.changeAppName(platform, newName);
-
-      // Assert
-      // Add your assertions here to verify the app name change
+    setUp(() {
+      // Set up logging service for tests
+      LoggingService.setVerboseMode(true);
+      LoggingService.setSuppressEmojis(true);
     });
 
-    test('changeAppName for Android', () {
-      // Arrange
-      final platform = ForgePlatform.android;
-      final newName = 'NewAppName';
-
-      // Act
-      BrandForge.changeAppName(platform, newName);
-
-      // Assert
-      // Add your assertions here to verify the app name change
+    test('showIntroduction should not throw', () {
+      expect(() => BrandForge.showIntroduction(), returnsNormally);
     });
 
-    test('changeAppIcon for iOS', () {
-      // Arrange
-      final platform = ForgePlatform.iOS;
-      final newIconPath = 'path/to/new/icon.png';
-
-      // Act
-      BrandForge.changeAppIcon(platform, newIconPath);
-
-      // Assert
-      // Add your assertions here to verify the app icon change
+    test('setVerboseMode should configure services', () {
+      expect(() => BrandForge.setVerboseMode(true), returnsNormally);
+      expect(() => BrandForge.setVerboseMode(false), returnsNormally);
     });
 
-    test('changeAppIcon for Android', () {
-      // Arrange
-      final platform = ForgePlatform.android;
-      final newIconPath = 'path/to/new/icon.png';
+    test('changeAppName should validate input', () {
+      // Test with empty name
+      expect(
+        () => BrandForge.changeAppName(ForgePlatform.iOS, ''),
+        throwsA(isA<BrandForgeException>()),
+      );
 
-      // Act
-      BrandForge.changeAppIcon(platform, newIconPath);
+      // Test with invalid characters
+      expect(
+        () => BrandForge.changeAppName(ForgePlatform.iOS, 'App<Name>'),
+        throwsA(isA<BrandForgeException>()),
+      );
+    });
 
-      // Assert
-      // Add your assertions here to verify the app icon change
+    test('changeAppIcon should validate input', () {
+      // Test with non-existent file
+      expect(
+        () => BrandForge.changeAppIcon(ForgePlatform.iOS, 'non_existent.png'),
+        throwsA(isA<BrandForgeException>()),
+      );
+
+      // Test with invalid file extension
+      expect(
+        () => BrandForge.changeAppIcon(ForgePlatform.iOS, 'invalid.txt'),
+        throwsA(isA<BrandForgeException>()),
+      );
+    });
+
+    test('changeAppIcon should warn for unsupported platforms', () {
+      // Create a temporary valid PNG file for testing
+      final tempDir = Directory.systemTemp.createTempSync();
+      final validIcon = File('${tempDir.path}/test.png');
+      validIcon.writeAsStringSync(
+        'fake png content',
+      ); // Minimal content for size validation
+
+      try {
+        // These should complete without throwing (just log warnings)
+        expect(
+          () => BrandForge.changeAppIcon(ForgePlatform.windows, validIcon.path),
+          returnsNormally,
+        );
+        expect(
+          () => BrandForge.changeAppIcon(ForgePlatform.macOS, validIcon.path),
+          returnsNormally,
+        );
+        expect(
+          () => BrandForge.changeAppIcon(ForgePlatform.linux, validIcon.path),
+          returnsNormally,
+        );
+      } finally {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+  });
+
+  group('Platform Helper', () {
+    test('should detect current platform', () {
+      final currentPlatform = ForgePlatform.current;
+      expect(currentPlatform, isA<ForgePlatform>());
     });
   });
 }

@@ -2,50 +2,28 @@ import 'dart:io';
 
 import 'package:brand_forge/errors/brand_forge_exception.dart';
 import 'package:brand_forge/helpers/platform_helper.dart';
+import 'package:brand_forge/services/backup_service.dart';
+import 'package:brand_forge/services/logging_service.dart';
+import 'package:brand_forge/services/validation_service.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
-enum LogType { info, progress, success, error, warning }
-
 class BrandForge {
   static void showIntroduction() {
-    // ASCII art for "BrandForge"
-    final brandForgeArt = '''
-     ____                      _ ______                   
-    |  _ \\                    | |  ____|                  
-    | |_) |_ __ __ _ _ __   __| | |__ ___  _ __ __ _  ___ 
-    |  _ <| '__/ _` | '_ \\ / _` |  __/ _ \\| '__/ _` |/ _ \\
-    | |_) | | | (_| | | | | (_| | | | (_) | | | (_| |  __/
-    |____/|_|  \\__,_|_| |_|\\__,_|_|  \\___/|_|  \\__, |\\___|
-                                                __/ |     
-                                                |___/     
-    ''';
-    _log('\n$brandForgeArt', type: LogType.info, showPrefixEmoji: false);
-    _log(
-      'Welcome to BrandForge! 🎉',
-      type: LogType.info,
-      showPrefixEmoji: false,
-    );
-    _log(
-      'This tool helps you dynamically change your app\'s name and icon.',
-      type: LogType.info,
-      showPrefixEmoji: false,
-    );
-    _log(
-      'Use --help to see available commands.',
-      type: LogType.info,
-      showPrefixEmoji: false,
-    );
+    LoggingService.printIntroduction();
+  }
+
+  /// Sets verbose mode for detailed logging
+  static void setVerboseMode(bool verbose) {
+    LoggingService.setVerboseMode(verbose);
+    BackupService.setVerboseLogging(verbose);
   }
 
   static void changeAppName(ForgePlatform platform, String newName) {
     // Validate input
-    _validateAppName(newName);
+    ValidationService.validateAppName(newName);
 
-    _log(
-      'Changing app name for ${platform.name} to "$newName"...',
-      type: LogType.progress,
-    );
+    LoggingService.logOperationStart('App name change', platform.name);
 
     try {
       switch (platform) {
@@ -65,10 +43,12 @@ class BrandForge {
           _changeAppNameLinux(newName);
           break;
       }
+      LoggingService.logOperationComplete('App name change', platform.name);
     } catch (e) {
-      _log(
-        'Failed to change app name for ${platform.name}: $e',
-        type: LogType.error,
+      LoggingService.logOperationError(
+        'App name change',
+        platform.name,
+        e.toString(),
       );
       rethrow;
     }
@@ -76,12 +56,9 @@ class BrandForge {
 
   static void changeAppIcon(ForgePlatform platform, String iconPath) {
     // Validate icon file
-    _validateIconFile(iconPath);
+    ValidationService.validateIconFile(iconPath);
 
-    _log(
-      'Changing app icon for ${platform.name} using $iconPath...',
-      type: LogType.progress,
-    );
+    LoggingService.logOperationStart('App icon change', platform.name);
 
     try {
       switch (platform) {
@@ -92,28 +69,28 @@ class BrandForge {
           _changeAppIconAndroid(iconPath);
           break;
         case ForgePlatform.windows:
-          _log(
-            'Windows app icon change not yet implemented.',
-            type: LogType.warning,
-          );
-          break;
         case ForgePlatform.macOS:
-          _log(
-            'macOS app icon change not yet implemented.',
-            type: LogType.warning,
-          );
-          break;
         case ForgePlatform.linux:
-          _log(
-            'Linux app icon change not yet implemented.',
-            type: LogType.warning,
+          throw BrandForgeException.platformNotSupported(
+            platform.name,
+            'App icon change',
           );
-          break;
       }
+      LoggingService.logOperationComplete('App icon change', platform.name);
     } catch (e) {
-      _log(
-        'Failed to change app icon for ${platform.name}: $e',
-        type: LogType.error,
+      if (e is BrandForgeException &&
+          e.type == BrandForgeErrorType.platformNotSupported) {
+        LoggingService.logOperationWarning(
+          'App icon change',
+          platform.name,
+          e.message,
+        );
+        return;
+      }
+      LoggingService.logOperationError(
+        'App icon change',
+        platform.name,
+        e.toString(),
       );
       rethrow;
     }
@@ -129,12 +106,7 @@ class BrandForge {
     );
     final File infoPlistFile = File(infoPlistPath);
 
-    if (!infoPlistFile.existsSync()) {
-      throw BrandForgeException(
-        'iOS Info.plist not found at: $infoPlistPath',
-        'Ensure you are running this command from a Flutter project root directory with iOS support',
-      );
-    }
+    ValidationService.validateRequiredFile(infoPlistPath, 'iOS');
 
     try {
       String content = infoPlistFile.readAsStringSync();
@@ -152,11 +124,15 @@ class BrandForge {
       );
 
       infoPlistFile.writeAsStringSync(content);
-      _log('iOS app name updated to "$newName"', type: LogType.success);
+      LoggingService.success('iOS app name updated to "$newName"');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update iOS Info.plist: $e',
-        'Check file permissions and ensure the Info.plist format is valid',
+        'Failed to update iOS Info.plist',
+        solution:
+            'Check file permissions and ensure the Info.plist format is valid',
+        type: BrandForgeErrorType.filePermission,
+        filePath: infoPlistPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -173,12 +149,7 @@ class BrandForge {
     );
     final File manifestFile = File(manifestPath);
 
-    if (!manifestFile.existsSync()) {
-      throw BrandForgeException(
-        'Android AndroidManifest.xml not found at: $manifestPath',
-        'Ensure you are running this command from a Flutter project root directory with Android support',
-      );
-    }
+    ValidationService.validateRequiredFile(manifestPath, 'Android');
 
     try {
       // Create backup
@@ -203,11 +174,15 @@ class BrandForge {
       manifestFile.writeAsStringSync(
         document.toXmlString(pretty: true, indent: '    '),
       );
-      _log('Android app name updated to "$newName"', type: LogType.success);
+      LoggingService.success('Android app name updated to "$newName"');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update Android AndroidManifest.xml: $e',
-        'Check file permissions and ensure the AndroidManifest.xml format is valid',
+        'Failed to update Android AndroidManifest.xml',
+        solution:
+            'Check file permissions and ensure the AndroidManifest.xml format is valid',
+        type: BrandForgeErrorType.filePermission,
+        filePath: manifestPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -222,12 +197,7 @@ class BrandForge {
     );
     final File mainCppFile = File(mainCppPath);
 
-    if (!mainCppFile.existsSync()) {
-      throw BrandForgeException(
-        'Windows main.cpp file not found at: $mainCppPath',
-        'Ensure you are running this command from a Flutter project root directory with Windows support',
-      );
-    }
+    ValidationService.validateRequiredFile(mainCppPath, 'Windows');
 
     try {
       String content = mainCppFile.readAsStringSync();
@@ -241,11 +211,15 @@ class BrandForge {
       );
 
       mainCppFile.writeAsStringSync(content);
-      _log('Windows app name updated to "$newName"', type: LogType.success);
+      LoggingService.success('Windows app name updated to "$newName"');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update Windows main.cpp: $e',
-        'Check file permissions and ensure the main.cpp format is valid',
+        'Failed to update Windows main.cpp',
+        solution:
+            'Check file permissions and ensure the main.cpp format is valid',
+        type: BrandForgeErrorType.filePermission,
+        filePath: mainCppPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -260,12 +234,7 @@ class BrandForge {
     );
     final File infoPlistFile = File(infoPlistPath);
 
-    if (!infoPlistFile.existsSync()) {
-      throw BrandForgeException(
-        'macOS Info.plist not found at: $infoPlistPath',
-        'Ensure you are running this command from a Flutter project root directory with macOS support',
-      );
-    }
+    ValidationService.validateRequiredFile(infoPlistPath, 'macOS');
 
     try {
       String content = infoPlistFile.readAsStringSync();
@@ -279,11 +248,15 @@ class BrandForge {
       );
 
       infoPlistFile.writeAsStringSync(content);
-      _log('macOS app name updated to "$newName"', type: LogType.success);
+      LoggingService.success('macOS app name updated to "$newName"');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update macOS Info.plist: $e',
-        'Check file permissions and ensure the Info.plist format is valid',
+        'Failed to update macOS Info.plist',
+        solution:
+            'Check file permissions and ensure the Info.plist format is valid',
+        type: BrandForgeErrorType.filePermission,
+        filePath: infoPlistPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -298,12 +271,7 @@ class BrandForge {
     );
     final File applicationFile = File(applicationPath);
 
-    if (!applicationFile.existsSync()) {
-      throw BrandForgeException(
-        'Linux my_application.cc file not found at: $applicationPath',
-        'Ensure you are running this command from a Flutter project root directory with Linux support',
-      );
-    }
+    ValidationService.validateRequiredFile(applicationPath, 'Linux');
 
     try {
       String content = applicationFile.readAsStringSync();
@@ -321,11 +289,15 @@ class BrandForge {
       );
 
       applicationFile.writeAsStringSync(content);
-      _log('Linux app name updated to "$newName"', type: LogType.success);
+      LoggingService.success('Linux app name updated to "$newName"');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update Linux my_application.cc: $e',
-        'Check file permissions and ensure the my_application.cc format is valid',
+        'Failed to update Linux my_application.cc',
+        solution:
+            'Check file permissions and ensure the my_application.cc format is valid',
+        type: BrandForgeErrorType.filePermission,
+        filePath: applicationPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -341,12 +313,7 @@ class BrandForge {
     );
     final Directory assetDir = Directory(assetPath);
 
-    if (!assetDir.existsSync()) {
-      throw BrandForgeException(
-        'iOS Asset directory not found at: $assetPath',
-        'Ensure you are running this command from a Flutter project root directory with iOS support',
-      );
-    }
+    ValidationService.validatePlatformDirectory(assetPath, 'iOS');
 
     try {
       // Create backup of existing icons
@@ -355,11 +322,15 @@ class BrandForge {
       // Copy new icon to asset folder
       final String newIconPath = p.join(assetDir.path, 'icon.png');
       File(iconPath).copySync(newIconPath);
-      _log('iOS app icon updated.', type: LogType.success);
+      LoggingService.success('iOS app icon updated.');
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update iOS app icon: $e',
-        'Check file permissions and ensure the icon file is accessible',
+        'Failed to update iOS app icon',
+        solution:
+            'Check file permissions and ensure the icon file is accessible',
+        type: BrandForgeErrorType.filePermission,
+        filePath: iconPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
@@ -374,14 +345,7 @@ class BrandForge {
       'main',
       'res',
     );
-    final Directory mipmapDir = Directory(mipmapPath);
-
-    if (!mipmapDir.existsSync()) {
-      throw BrandForgeException(
-        'Android mipmap directory not found at: $mipmapPath',
-        'Ensure you are running this command from a Flutter project root directory with Android support',
-      );
-    }
+    ValidationService.validatePlatformDirectory(mipmapPath, 'Android');
 
     try {
       // Copy new icon to mipmap folder
@@ -410,178 +374,35 @@ class BrandForge {
       }
 
       if (copiedCount > 0) {
-        _log(
+        LoggingService.success(
           'Android app icon updated in $copiedCount density folders.',
-          type: LogType.success,
         );
       } else {
-        _log(
+        LoggingService.warning(
           'No mipmap directories found for Android icon update.',
-          type: LogType.warning,
         );
       }
     } catch (e) {
       throw BrandForgeException(
-        'Failed to update Android app icon: $e',
-        'Check file permissions and ensure the icon file is accessible',
+        'Failed to update Android app icon',
+        solution:
+            'Check file permissions and ensure the icon file is accessible',
+        type: BrandForgeErrorType.filePermission,
+        filePath: iconPath,
+        innerException: e is Exception ? e : Exception(e.toString()),
       );
     }
   }
 
   static String _findProjectRoot() {
-    Directory current = Directory.current;
-    while (current.path != current.parent.path) {
-      if (File(p.join(current.path, 'pubspec.yaml')).existsSync()) {
-        return current.path;
-      }
-      current = current.parent;
-    }
-    throw const BrandForgeException(
-      'Could not find Flutter project root directory',
-      'Ensure you are running this command from within a Flutter project directory',
-    );
+    return ValidationService.validateAndFindProjectRoot();
   }
 
   static void _createBackup(File file) {
-    if (!file.existsSync()) return;
-
-    final backupPath =
-        '${file.path}.backup.${DateTime.now().millisecondsSinceEpoch}';
-    try {
-      file.copySync(backupPath);
-      _log('Created backup: $backupPath', type: LogType.info);
-    } catch (e) {
-      _log(
-        'Warning: Could not create backup for ${file.path}: $e',
-        type: LogType.warning,
-      );
-    }
+    BackupService.createFileBackup(file);
   }
 
   static void _backupDirectory(Directory dir) {
-    if (!dir.existsSync()) return;
-
-    final backupPath =
-        '${dir.path}.backup.${DateTime.now().millisecondsSinceEpoch}';
-    try {
-      _copyDirectory(dir, Directory(backupPath));
-      _log('Created directory backup: $backupPath', type: LogType.info);
-    } catch (e) {
-      _log(
-        'Warning: Could not create directory backup for ${dir.path}: $e',
-        type: LogType.warning,
-      );
-    }
-  }
-
-  static void _copyDirectory(Directory source, Directory destination) {
-    if (!destination.existsSync()) {
-      destination.createSync(recursive: true);
-    }
-
-    source.listSync().forEach((entity) {
-      final String newPath = p.join(destination.path, p.basename(entity.path));
-      if (entity is File) {
-        entity.copySync(newPath);
-      } else if (entity is Directory) {
-        _copyDirectory(entity, Directory(newPath));
-      }
-    });
-  }
-
-  static void _log(
-    String message, {
-    LogType type = LogType.info,
-    bool showPrefixEmoji = true,
-  }) {
-    String prefix = '';
-    String emoji = '';
-    if (showPrefixEmoji) {
-      // Only add prefix and emoji if showPrefixEmoji is true
-      switch (type) {
-        case LogType.info:
-          prefix = '[INFO]';
-          emoji = 'ℹ️'; // Information symbol
-          break;
-        case LogType.progress:
-          prefix = '[PROGRESS]';
-          emoji = '⏳'; // Hourglass
-          break;
-        case LogType.success:
-          prefix = '[SUCCESS]';
-          emoji = '✅'; // Check mark
-          break;
-        case LogType.error:
-          prefix = '[ERROR]';
-          emoji = '❌'; // Cross mark
-          break;
-        case LogType.warning:
-          prefix = '[WARNING]';
-          emoji = '⚠️'; // Warning sign
-          break;
-      }
-    }
-    // ignore: avoid_print
-    print(
-      '$prefix$emoji $message',
-    ); // Concatenate prefix and emoji only if needed
-  }
-
-  static void _validateAppName(String appName) {
-    if (appName.trim().isEmpty) {
-      throw const BrandForgeException(
-        'App name cannot be empty',
-        'Provide a valid app name with at least one character',
-      );
-    }
-
-    if (appName.length > 100) {
-      throw const BrandForgeException(
-        'App name is too long (maximum 100 characters)',
-        'Use a shorter app name',
-      );
-    }
-
-    // Check for invalid characters in app names
-    final invalidChars = RegExp(r'[<>:"/\\|?*]');
-    if (invalidChars.hasMatch(appName)) {
-      throw BrandForgeException(
-        'App name contains invalid characters: ${invalidChars.allMatches(appName).map((e) => e.group(0)).join(", ")}',
-        'Remove special characters like < > : " / \\ | ? *',
-      );
-    }
-  }
-
-  static void _validateIconFile(String iconPath) {
-    final File iconFile = File(iconPath);
-
-    if (!iconFile.existsSync()) {
-      throw BrandForgeException(
-        'Icon file not found at: $iconPath',
-        'Check the file path and ensure the file exists',
-      );
-    }
-
-    // Check file size (should not be too large)
-    final fileSizeBytes = iconFile.lengthSync();
-    const maxSizeBytes = 10 * 1024 * 1024; // 10MB
-
-    if (fileSizeBytes > maxSizeBytes) {
-      throw BrandForgeException(
-        'Icon file is too large: ${(fileSizeBytes / 1024 / 1024).toStringAsFixed(1)}MB',
-        'Use an icon file smaller than 10MB',
-      );
-    }
-
-    // Check file extension
-    final extension = p.extension(iconPath).toLowerCase();
-    final validExtensions = ['.png', '.jpg', '.jpeg', '.ico'];
-
-    if (!validExtensions.contains(extension)) {
-      throw BrandForgeException(
-        'Unsupported icon format: $extension',
-        'Use one of these formats: ${validExtensions.join(", ")}',
-      );
-    }
+    BackupService.createDirectoryBackup(dir);
   }
 }

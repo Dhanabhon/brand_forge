@@ -1,34 +1,40 @@
 import 'dart:io';
 import 'package:brand_forge/errors/brand_forge_exception.dart';
 import 'package:brand_forge/helpers/platform_helper.dart';
+import 'package:brand_forge/services/validation_service.dart';
 import 'package:test/test.dart';
-import 'package:brand_forge/brand_forge.dart';
 
 void main() {
   group('BrandForge CLI Tests', () {
     test('should validate app name correctly', () {
-      // Test valid app names
+      // Test valid app names (will throw because files don't exist, but validation passes)
       expect(
-        () => BrandForge.changeAppName(ForgePlatform.iOS, 'Valid App Name'),
-        throwsA(isA<BrandForgeException>()),
-      ); // Will throw because files don't exist, but validation passes
+        () => ValidationService.validateAppName('Valid App Name'),
+        returnsNormally,
+      );
 
       // Test empty app name
       expect(
-        () => BrandForge.changeAppName(ForgePlatform.iOS, ''),
+        () => ValidationService.validateAppName(''),
         throwsA(isA<BrandForgeException>()),
       );
 
       // Test app name that's too long
       final longName = 'A' * 101;
       expect(
-        () => BrandForge.changeAppName(ForgePlatform.iOS, longName),
+        () => ValidationService.validateAppName(longName),
         throwsA(isA<BrandForgeException>()),
       );
 
       // Test app name with invalid characters
       expect(
-        () => BrandForge.changeAppName(ForgePlatform.iOS, 'App<Name>'),
+        () => ValidationService.validateAppName('App<Name>'),
+        throwsA(isA<BrandForgeException>()),
+      );
+
+      // Test app name with leading/trailing spaces
+      expect(
+        () => ValidationService.validateAppName(' App Name '),
         throwsA(isA<BrandForgeException>()),
       );
     });
@@ -36,17 +42,26 @@ void main() {
     test('should validate icon file correctly', () {
       // Test non-existent file
       expect(
-        () => BrandForge.changeAppIcon(ForgePlatform.iOS, 'non_existent.png'),
+        () => ValidationService.validateIconFile('non_existent.png'),
         throwsA(isA<BrandForgeException>()),
       );
 
       // Test invalid file extension
       final tempDir = Directory.systemTemp.createTempSync();
       final invalidFile = File('${tempDir.path}/test.txt');
-      invalidFile.writeAsStringSync('test');
+      invalidFile.writeAsStringSync('test content');
 
       expect(
-        () => BrandForge.changeAppIcon(ForgePlatform.iOS, invalidFile.path),
+        () => ValidationService.validateIconFile(invalidFile.path),
+        throwsA(isA<BrandForgeException>()),
+      );
+
+      // Test empty file
+      final emptyFile = File('${tempDir.path}/empty.png');
+      emptyFile.writeAsStringSync('');
+
+      expect(
+        () => ValidationService.validateIconFile(emptyFile.path),
         throwsA(isA<BrandForgeException>()),
       );
 
@@ -55,21 +70,40 @@ void main() {
     });
 
     test('should find project root correctly', () {
-      // This test requires being in a Flutter project directory
-      // In real usage, this would work
+      // This test runs in project directory, should find pubspec.yaml
       expect(
-        () => BrandForge.changeAppName(ForgePlatform.iOS, 'Test App'),
-        throwsA(isA<BrandForgeException>()),
+        () => ValidationService.validateAndFindProjectRoot(),
+        returnsNormally,
       );
+
+      final projectRoot = ValidationService.validateAndFindProjectRoot();
+      expect(projectRoot, isNotEmpty);
+      expect(File('$projectRoot/pubspec.yaml').existsSync(), isTrue);
     });
 
     test('BrandForgeException should format message correctly', () {
-      final exception = BrandForgeException('Test error', 'Test solution');
+      final exception = BrandForgeException(
+        'Test error',
+        solution: 'Test solution',
+        type: BrandForgeErrorType.validation,
+      );
       expect(exception.toString(), contains('Test error'));
-      expect(exception.toString(), contains('Solution: Test solution'));
+      expect(exception.toString(), contains('💡 Solution: Test solution'));
+      expect(exception.toString(), contains('❌ Validation Error:'));
 
       final exceptionNoSolution = BrandForgeException('Test error');
-      expect(exceptionNoSolution.toString(), equals('Test error'));
+      expect(exceptionNoSolution.toString(), contains('Test error'));
+
+      // Test factory constructors
+      final fileNotFound = BrandForgeException.fileNotFound('/test/path');
+      expect(fileNotFound.toString(), contains('📁 File Error:'));
+      expect(fileNotFound.filePath, equals('/test/path'));
+
+      final platformNotSupported = BrandForgeException.platformNotSupported(
+        'macOS',
+        'icon change',
+      );
+      expect(platformNotSupported.toString(), contains('🚧 Platform Error:'));
     });
   });
 
