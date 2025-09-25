@@ -176,7 +176,9 @@ void _changeAppNameForAllPlatforms(String appName, bool verbose) {
     try {
       BrandForge.changeAppName(platform, appName);
     } catch (e) {
-      LoggingService.warning('Failed to change app name for ${platform.name}: $e');
+      LoggingService.warning(
+        'Failed to change app name for ${platform.name}: $e',
+      );
     }
   }
 }
@@ -196,7 +198,9 @@ void _changeAppIconForAllPlatforms(String iconPath, bool verbose) {
     try {
       BrandForge.changeAppIcon(platform, iconPath);
     } catch (e) {
-      LoggingService.warning('Failed to change app icon for ${platform.name}: $e');
+      LoggingService.warning(
+        'Failed to change app icon for ${platform.name}: $e',
+      );
     }
   }
 }
@@ -223,5 +227,7 @@ For more information, visit: https://github.com/Dhanabhon/brand_forge
 
 void _showVersion() {
   LoggingService.info('BrandForge version 0.0.4');
-  LoggingService.info('A Flutter package to change app name and icon via command line.');
+  LoggingService.info(
+    'A Flutter package to change app name and icon via command line.',
+  );
 }

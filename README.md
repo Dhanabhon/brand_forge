@@ -5,7 +5,7 @@
 
 BrandForge is a powerful Flutter package that empowers you to dynamically change your Flutter application's name and icon directly from the command line or within your Dart code. This is incredibly useful for white-labeling, creating multiple app variants, or managing different branding strategies.
 
-## ✨ Key Features
+## Key Features
 
 * **Dynamic App Name Changes:** Effortlessly modify the display name of your app for all supported platforms (iOS, Android, Windows, macOS, Linux).
 * **Custom App Icons:** Swap out your app's icon with ease for iOS and Android platforms, with additional platform support coming soon.
@@ -16,7 +16,7 @@ BrandForge is a powerful Flutter package that empowers you to dynamically change
 * **Command-Line Interface (CLI):** Operate BrandForge via the command line for efficient automation with verbose logging support.
 * **Programmatic API:** Integrate BrandForge directly within your Dart code for complete flexibility.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -59,7 +59,7 @@ If you want to use the `brand_forge` command globally, run:
 
 **Important:** Ensure that you have added the Pub cache bin directory to your PATH environment variable. You can follow [this](https://dart.dev/tools/pub/cmd/pub-global) instruction.
 
-## 🛠️ Usage
+## Usage
 
 ### Command-Line Interface (CLI)
 
@@ -170,17 +170,17 @@ You can also use BrandForge directly in your Dart code:
    }
 ```
 
-## 📋 Supported Platforms
+## Supported Platforms
 
 | Platform | App Name | App Icon | Status |
 | --- | --- | --- | --- |
-| iOS | ✅ | ✅ | Fully Supported |
-| Android | ✅ | ✅ | Fully Supported |
-| Windows | ✅ | ⏳ | Name Only |
-| macOS | ✅ | ⏳ | Name Only |
-| Linux | ✅ | ⏳ | Name Only |
+| iOS | Yes | Yes | Fully Supported |
+| Android | Yes | Yes | Fully Supported |
+| Windows | Yes | Coming Soon | Name Only |
+| macOS | Yes | Coming Soon | Name Only |
+| Linux | Yes | Coming Soon | Name Only |
 
-## 🔧 File Locations Modified
+## File Locations Modified
 
 ### iOS
 
@@ -212,7 +212,7 @@ You can also use BrandForge directly in your Dart code:
 
 - **App Icon:** Not yet implemented
 
-## 🛡️ Safety & Reliability Features
+## Safety & Reliability Features
 
 ### Intelligent Backup System
 
@@ -244,15 +244,15 @@ BrandForge automatically creates backups of all modified files with timestamps:
 Typed error system with detailed, actionable error messages:
 
 ```sh
-❌ Validation Error: App name contains invalid characters: <, >
-💡 Solution: Remove special characters like < > : " / \ | ? *
+Validation Error: App name contains invalid characters: <, >
+Solution: Remove special characters like < > : " / \ | ? *
 
-📁 File Error: File not found: /path/to/icon.png
+File Error: File not found: /path/to/icon.png
 File: /path/to/icon.png
-💡 Solution: Ensure the file exists and the path is correct
+Solution: Ensure the file exists and the path is correct
 
-🚧 Platform Error: App icon change is not yet supported on macOS
-💡 Solution: This feature will be added in a future version
+Platform Error: App icon change is not yet supported on macOS
+Solution: This feature will be added in a future version
 ```
 
 ### Service-Oriented Architecture
@@ -262,7 +262,7 @@ File: /path/to/icon.png
 - **BackupService:** Intelligent file backup and restoration
 - **Separation of Concerns:** Each service handles specific functionality
 
-## 🧪 Testing
+## Testing
 
 Run the comprehensive test suite:
 
@@ -287,7 +287,7 @@ The enhanced test suite covers:
 - **Mocking:** Isolated testing of file operations
 - **Error simulation:** Testing error conditions and recovery
 
-## 🚧 Upcoming Features
+## Upcoming Features
 
 - **Complete Icon Support:** Windows, macOS, and Linux icon changes
 - **Web Platform Support:** Progressive Web App configuration
@@ -300,15 +300,15 @@ The enhanced test suite covers:
 - **Configuration Profiles:** Save and reuse branding configurations
 - **Rollback System:** Easy rollback to previous branding states
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Code of Conduct](https://github.com/Dhanabhon/brand_forge/blob/main/CODE_OF_CONDUCT.md) for guidelines.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/Dhanabhon/brand_forge/blob/main/LICENSE) file for details.
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -363,12 +363,12 @@ Verbose mode provides:
 
 ## Getting Help
 
-- 📖 Check the documentation above
+- Check the documentation above
 
-- 🐛 Report bugs on [GitHub Issues](https://github.com/Dhanabhon/brand_forge/issues)
+- Report bugs on [GitHub Issues](https://github.com/Dhanabhon/brand_forge/issues)
 
-- 💬 Ask questions in [GitHub Discussions](https://github.com/Dhanabhon/brand_forge/discussions)
+- Ask questions in [GitHub Discussions](https://github.com/Dhanabhon/brand_forge/discussions)
 
 ---
 
-Made with ❤️ by the BrandForge
+Made with love by the BrandForge team

@@ -44,7 +44,9 @@ class BackupService {
     try {
       _copyDirectory(directory, Directory(backupPath));
       if (_verboseLogging) {
-        LoggingService.debug('Created directory backup: ${p.basename(backupPath)}');
+        LoggingService.debug(
+          'Created directory backup: ${p.basename(backupPath)}',
+        );
       }
       return backupPath;
     } catch (e) {
@@ -121,7 +123,9 @@ class BackupService {
     } catch (e) {
       // Non-critical error for cleanup
       if (_verboseLogging) {
-        LoggingService.warning('Could not cleanup old backups for $originalPath');
+        LoggingService.warning(
+          'Could not cleanup old backups for $originalPath',
+        );
       }
     }
   }
@@ -155,7 +159,9 @@ class BackupService {
 
       // Restore the backup
       mostRecentBackup.copySync(originalPath);
-      LoggingService.success('Restored from backup: ${p.basename(mostRecentBackup.path)}');
+      LoggingService.success(
+        'Restored from backup: ${p.basename(mostRecentBackup.path)}',
+      );
       return true;
     } catch (e) {
       LoggingService.error('Failed to restore from backup: $e');
